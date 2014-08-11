@@ -1,14 +1,13 @@
 {
-  "name": "node-js-getting-started",
+  "name": "nickcharles-bluebird",
   "version": "0.1.0",
-  "description": "A sample Node.js app using Express 4",
+  "description": "A node.js API backend for the Bluebird Twitter application",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "~3.4.x",
-    "cool-ascii-faces": "~1.3.x"
+    "express": "~3.4.x"
   },
   "engines": {
     "node": "0.10.x"
@@ -20,11 +19,10 @@
   "keywords": [
     "node",
     "heroku",
-    "express"
+    "express",
+    "twitter",
+    "bluebird"
   ],
-  "author": "Mark Pundsack",
-  "contributors": [
-    "Zeke Sikelianos <zeke@sikelianos.com> (http://zeke.sikelianos.com)"
-  ],
+  "author": "Nick Morgan",
   "license": "MIT"
 }
