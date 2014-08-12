@@ -33,8 +33,7 @@ app.get('/oauth2/token', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
-        response.send(body);
+        response.send(chunk);
         });
     });
 
@@ -60,8 +59,7 @@ app.get('/friends/ids', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
-        response.send(body);
+        response.send(chunk);
         });
     });
 
@@ -87,8 +85,7 @@ app.get('/followers/ids', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
-        response.send(body);
+        response.send(chunk);
         });
     });
 
@@ -114,8 +111,7 @@ app.get('/friends/list', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
-        response.send(body);
+        response.send(chunk);
         });
     });
 
@@ -141,8 +137,7 @@ app.get('/followers/list', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
-        response.send(body);
+        response.send(chunk);
         });
     });
 
