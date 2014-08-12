@@ -33,7 +33,8 @@ app.get('/oauth2/token', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        response.send(chunk);
+        var body = JSON.parse(chunk);
+        response.send(body);
         });
     });
 
@@ -59,7 +60,8 @@ app.get('/friends/ids', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        response.send(chunk);
+        var body = JSON.parse(chunk);
+        response.send(body);
         });
     });
 
@@ -85,7 +87,8 @@ app.get('/followers/ids', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        response.send(chunk);
+        var body = JSON.parse(chunk);
+        response.send(body);
         });
     });
 
@@ -111,7 +114,8 @@ app.get('/friends/list', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        response.send(chunk);
+        var body = JSON.parse(chunk);
+        response.send(body);
         });
     });
 
@@ -137,7 +141,8 @@ app.get('/followers/list', function(request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        response.send(chunk);
+        var body = JSON.parse(chunk);
+        response.send(body);
         });
     });
 
@@ -164,7 +169,7 @@ app.get('/users/lookup', function (request, response) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
         console.log('BODY: ' + chunk);
-        var body = eval(chunk);
+        var body = JSON.parse(chunk);
         response.send(body);
         });
     });
