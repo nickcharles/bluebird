@@ -32,16 +32,15 @@ app.get('/oauth2/token', function(request, response) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            console.log('BODY: ' + chunk);
+            var body = JSON.parse(chunk);
+            response.send(body);
         });
     });
 
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     req.end('grant_type=client_credentials');
 });
 
@@ -59,16 +58,15 @@ app.get('/friends/ids', function(request, response) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            console.log('BODY: ' + chunk);
+            var body = JSON.parse(chunk);
+            response.send(body);
         });
     });
 
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     req.end();
 });
 
@@ -86,16 +84,15 @@ app.get('/followers/ids', function(request, response) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            console.log('BODY: ' + chunk);
+            var body = JSON.parse(chunk);
+            response.send(body);
         });
     });
 
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     req.end();
 });
 
@@ -113,16 +110,15 @@ app.get('/friends/list', function(request, response) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            console.log('BODY: ' + chunk);
+            var body = JSON.parse(chunk);
+            response.send(body);
         });
     });
 
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     req.end();
 });
 
@@ -140,16 +136,15 @@ app.get('/followers/list', function(request, response) {
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            console.log('BODY: ' + chunk);
+            var body = JSON.parse(chunk);
+            response.send(body);
         });
     });
 
     req.on('error', function(e) {
         console.log('problem with request: ' + e.message);
     });
-
     req.end();
 });
 
@@ -162,15 +157,18 @@ app.get('/users/lookup', function (request, response) {
             'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ'
         }
     };
-    console.log(options.path);
     var req = https.request(options, function (res) {
         console.log('STATUS: ' + res.statusCode);
         console.log('HEADERS: ' + JSON.stringify(res.headers));
         res.setEncoding('utf8');
+        var body = new String();
         res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-        var body = JSON.parse(chunk);
-        response.send(body);
+            body += chunk;
+        });
+        res.on('end', function () {
+            console.log('BODY:' + body)
+            body = JSON.parse(body);
+            response.send(body);
         });
     });
 
