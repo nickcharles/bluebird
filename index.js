@@ -151,7 +151,7 @@ app.get('/followersList', function(request, response) {
 app.get('/userLookup', function (request, response) {
     var options = {
         hostname: 'api.twitter.com',
-        path: '/1.1/users/lookup.json?user_id=' + request.query,
+        path: '/1.1/users/lookup.json?user_id=783214',
         method: 'POST',
         headers: {
             'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ'
