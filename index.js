@@ -148,6 +148,32 @@ app.get('/followersList', function(request, response) {
     req.end();
 });
 
+app.get('/userLookup', function (request, response) {
+    var options = {
+        hostname: 'api.twitter.com',
+        path: '/1.1/users/lookup.json?user_id=' + request.query,
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ'
+        }
+    };
+    var req = https.request(options, function (res) {
+        console.log('STATUS: ' + res.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+        console.log('BODY: ' + chunk);
+        response.send(chunk);
+        });
+    });
+
+    req.on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    req.end();
+})
+
 var server = app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 })
