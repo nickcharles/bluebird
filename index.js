@@ -17,7 +17,7 @@ app.get('/', function(request, response) {
     console.log("screen_name=" + request.query.screen_name);
 });
 
-app.get('/oauth', function(request, response) {
+app.get('/oauth2/token', function(request, response) {
     var options = {
         hostname: 'api.twitter.com',
         path: '/oauth2/token',
@@ -44,7 +44,7 @@ app.get('/oauth', function(request, response) {
     req.end('grant_type=client_credentials');
 });
 
-app.get('/friendsID', function(request, response) {
+app.get('/friends/ids', function(request, response) {
     var options = {
         hostname: 'api.twitter.com',
         path: '/1.1/friends/ids.json?screen_name=' + request.query.screen_name,
@@ -70,7 +70,7 @@ app.get('/friendsID', function(request, response) {
     req.end();
 });
 
-app.get('/followersID', function(request, response) {
+app.get('/followers/ids', function(request, response) {
     var options = {
         hostname: 'api.twitter.com',
         path: '/1.1/followers/ids.json?screen_name=' + request.query.screen_name,
@@ -96,7 +96,7 @@ app.get('/followersID', function(request, response) {
     req.end();
 });
 
-app.get('/friendsList', function(request, response) {
+app.get('/friends/list', function(request, response) {
     var options = {
         hostname: 'api.twitter.com',
         path: '/1.1/friends/list.json?screen_name=' + request.query.screen_name,
@@ -122,7 +122,7 @@ app.get('/friendsList', function(request, response) {
     req.end();
 });
 
-app.get('/followersList', function(request, response) {
+app.get('/followers/list', function(request, response) {
     var options = {
         hostname: 'api.twitter.com',
         path: '/1.1/followers/list.json?screen_name=' + request.query.screen_name,
@@ -148,16 +148,16 @@ app.get('/followersList', function(request, response) {
     req.end();
 });
 
-app.get('/userLookup', function (request, response) {
-    console.log(request.query)
+app.get('/users/lookup', function (request, response) {
     var options = {
         hostname: 'api.twitter.com',
-        path: '/1.1/users/lookup.json?user_id=' + request.query.ids,
+        path: '/1.1/users/lookup.json?user_id=' + request.query.user_id,
         method: 'POST',
         headers: {
             'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ'
         }
     };
+    console.log(options.path);
     var req = https.request(options, function (res) {
         console.log('STATUS: ' + res.statusCode);
         console.log('HEADERS: ' + JSON.stringify(res.headers));
