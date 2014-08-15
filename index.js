@@ -53,13 +53,14 @@ app.get('/oauth2/token', function (request, response) {
         });
     });
 
-    req.on('error', function(e) {console.log('problem with request: ' + e.message);});req.end('grant_type=client_credentials');
-    req.end();
+    req.on('error', function(e) {console.log('problem with request: ' + e.message);});
+    req.end('grant_type=client_credentials');
 });
 
 app.get('/friends/ids', function (request, response) {
-    options['path'] = '/1.1/friends/ids.json?screen_name=';
+    options['path'] = '/1.1/friends/ids.json?screen_name=' + request.query.screen_name;
     options['method'] = 'GET';
+    console.log(options);
     var req = https.request(options, function (res) {
         console.log('STATUS: ' + res.statusCode);
         console.log('HEADERS: ' + JSON.stringify(res.headers));
@@ -76,7 +77,7 @@ app.get('/friends/ids', function (request, response) {
 });
 
 app.get('/followers/ids', function (request, response) {
-    options['path'] = '/1.1/followers/ids.json?screen_name=';
+    options['path'] = '/1.1/followers/ids.json?screen_name=' + request.query.screen_name;
     options['method'] = 'GET';
     var req = https.request(options, function (res) {
         console.log('STATUS: ' + res.statusCode);
@@ -114,7 +115,7 @@ app.get('/friends/list', function (request, response) {
 });
 
 app.get('/followers/list', function (request, response) {
-    options['path'] = '/1.1/followers/list.json?screen_name=';
+    options['path'] = '/1.1/followers/list.json?screen_name=' + request.query.screen_name;
     options['method'] = 'GET';
     var req = https.request(options, function (res) {
         console.log('STATUS: ' + res.statusCode);
@@ -132,7 +133,7 @@ app.get('/followers/list', function (request, response) {
 });
 
 app.get('/users/lookup', function (request, response) {
-    options['path'] = '/1.1/users/lookup.json?user_id=';
+    options['path'] = '/1.1/users/lookup.json?user_id=' + request.query.screen_name;
     options['method'] = 'POST';
     var idsArr = request.query.user_id.split(','), idsArrSpliced = Array();
 
