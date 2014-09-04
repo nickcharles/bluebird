@@ -133,7 +133,6 @@ app.get('/followers/list', function (request, response) {
 });
 
 app.get('/users/lookup', function (request, response) {
-    // options['path'] = '/1.1/users/lookup.json?user_id=' + request.query.screen_name;
     options['method'] = 'POST';
     var idsArr = request.query.user_id.split(','), idsArrSpliced = Array();
 
