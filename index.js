@@ -133,13 +133,13 @@ app.get('/followers/list', function (request, response) {
 });
 
 app.get('/users/lookup', function (request, response) {
-    options['path'] = '/1.1/users/lookup.json?user_id=' + request.query.screen_name;
+    // options['path'] = '/1.1/users/lookup.json?user_id=' + request.query.screen_name;
     options['method'] = 'POST';
     var idsArr = request.query.user_id.split(','), idsArrSpliced = Array();
 
     while (idsArr.length > 0)
     {
-        idsArrSpliced.push(idsArr.splice(0, 2));
+        idsArrSpliced.push(idsArr.splice(0, 100));
     }
 
     var finished = 0;
