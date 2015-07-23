@@ -1,16 +1,16 @@
 {
   "name": "nickcharles-bluebird",
   "version": "0.1.0",
-  "description": "A node.js API backend for the Bluebird Twitter application",
+  "description": "A node.js backend for the Bluebird Twitter application",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "~3.4.x"
+    "express": "~4.9.x"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": "0.12.x"
   },
   "repository": {
     "type": "git",
