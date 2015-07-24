@@ -1,171 +1,315 @@
+var https = require('https');
 var express = require('express');
 var app = express();
-var https = require('https');
 
-var options = {
+var version = '0.1.0';
+var consumerKey = '1q7S3mlkPLSkWe0SUjo2S1zZS';
+var consumerSecret = '4f5nbI1M5GwqqXhTkShoc0JwvPUoDGifolfiufb2TRDnpCU9Xw';
+var globalOptions = {
     hostname: 'api.twitter.com',
-    headers: {
-        'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ'
-    }
+    headers: { 'Authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAAOAHZQAAAAAAy%2FOzsWmWdNx9h55TxrN4RacJMF4%3D4hZjOy5CkpPOA7pIlpMScBIHPBnvHAhKarbLHUO3Gafs9toNMQ' }
 };
 
-// var callback = function (res) {
-//     console.log('STATUS: ' + res.statusCode);
-//     console.log('HEADERS: ' + JSON.stringify(res.headers));
-//     res.setEncoding('utf8');
-//     res.on('data', function (chunk) {
-//         console.log('BODY: ' + chunk);
-//         var body = JSON.parse(chunk);
-//         response.send(body);
-//     });
-// };
 
 app.set('port', (process.env.PORT || 5000));
+
 app.use(express.static(__dirname + '/public'));
 
-app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+
+app.all('*', function(request, response, next) {
+    response.header('Access-Control-Allow-Origin', '*');
+    response.header('Access-Control-Allow-Headers', 'X-Requested-With');
     next();
 });
 
+
 app.get('/', function(request, response) {
-    response.send("This is the default response.");
-    console.log(request.query);
-    console.log("screen_name=" + request.query.screen_name);
+    console.log(globalOptions);
+    response.send('Bluebird server is running.');
 });
 
-app.get('/oauth2/token', function (request, response) {
-    options['path'] = '/oauth2/token';
-    options['method'] = 'POST';
-    options['headers'] = {
-        'Authorization': 'Basic S2E2MHY3SENXdklNSmJrajZXWXI5U2g5TTpyN09jUXhiZ05nSHkzTkNHVXR6a1V3TmdwOFFic3ZUaWFiVlVxellCeEJ2QTBzenlUNA==',
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+
+app.get('/version', function(request, response) {
+    response.send('Bluebird API version ' + version);
+});
+
+
+function buildAuthString(consumerKey, consumerSecret) {
+    var bearerToken = encodeURIComponent(consumerKey) + ':' + encodeURIComponent(consumerSecret);
+    var encodedToken = Buffer(bearerToken).toString('base64');
+    return authorization = 'Basic ' + encodedToken;
+};
+
+
+function authenticateBluebird() {
+    var authOptions = {
+        hostname: 'api.twitter.com',
+        method: 'POST',
+        path: '/oauth2/token',
+        headers: {
+            'Authorization': buildAuthString(consumerKey, consumerSecret),
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
     };
-    var req = https.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            var body = JSON.parse(chunk);
+
+    var apiReq = https.request(authOptions, function (apiRes) {
+        console.log('STATUS: ', apiRes.statusCode);
+        console.log('HEADERS: ', apiRes.headers);
+        apiRes.on('data', function (chunk) {
+            body = JSON.parse(chunk);
+            console.log('BODY: ', body);
+            globalOptions.headers = {
+                'Authorization': 'Bearer ' + body.access_token
+            };
+        });
+        
+    });
+
+    apiReq.on('error', function (e) {
+        console.error('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.write('grant_type=client_credentials');
+    apiReq.end();
+};
+
+
+app.get('/api/oauth2/token', function (request, response) {
+    var authOptions = {
+        hostname: 'api.twitter.com',
+        method: 'POST',
+        path: '/oauth2/token',
+        headers: {
+            'Authorization': buildAuthString(consumerKey, consumerSecret),
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        }
+    };
+
+    var apiReq = https.request(authOptions, function (apiRes) {
+        console.log('STATUS: ', apiRes.statusCode);
+        console.log('HEADERS: ', apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            globalOptions.headers = {
+                'Bearer': body.access_token
+            };
+            response.send('Successfully set new auth token on server!');
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.error('ERROR - Problem with request: ' + e.message);
+        response.send('Error setting new auth token, please check server logs for details.');
+    });
+
+    apiReq.write('grant_type=client_credentials');
+    apiReq.end();
+});
+
+
+app.get('/api/users/lookup', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        method: 'POST',
+        path: '/1.1/users/lookup.json?user_id=' + request.query.user_id + '&include_entities=false',
+        headers: globalOptions.headers
+    };
+
+    var apiReq = https.request(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
             response.send(body);
         });
     });
 
-    req.on('error', function(e) {console.log('problem with request: ' + e.message);});
-    req.end('grant_type=client_credentials');
-});
-
-app.get('/friends/ids', function (request, response) {
-    options['path'] = '/1.1/friends/ids.json?screen_name=' + request.query.screen_name;
-    options['method'] = 'GET';
-    console.log(options);
-    var req = https.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            var body = JSON.parse(chunk);
-            response.send(body);
-        });
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
     });
 
-    req.on('error', function(e) {console.log('problem with request: ' + e.message);});
-    req.end();
-});
-
-app.get('/followers/ids', function (request, response) {
-    options['path'] = '/1.1/followers/ids.json?screen_name=' + request.query.screen_name;
-    options['method'] = 'GET';
-    var req = https.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            var body = JSON.parse(chunk);
-            response.send(body);
-        });
-    });
-
-    req.on('error', function(e) {console.log('problem with request: ' + e.message);});
-    req.end();
-});
-
-app.get('/friends/list', function (request, response) {
-    options['path'] = '/1.1/friends/list.json?screen_name=';
-    options['method'] = 'GET';
-    var req = https.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            var body = JSON.parse(chunk);
-            response.send(body);
-        });
-    });
-
-    req.on('error', function(e) {
-        console.log('problem with request: ' + e.message);
-    });
-    req.end();
-});
-
-app.get('/followers/list', function (request, response) {
-    options['path'] = '/1.1/followers/list.json?screen_name=' + request.query.screen_name;
-    options['method'] = 'GET';
-    var req = https.request(options, function (res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-            var body = JSON.parse(chunk);
-            response.send(body);
-        });
-    });
-
-    req.on('error', function(e) {console.log('problem with request: ' + e.message);});
-    req.end();
-});
-
-app.get('/users/lookup', function (request, response) {
-    options['method'] = 'POST';
-    var idsArr = request.query.user_id.split(','), idsArrSpliced = Array();
-
-    while (idsArr.length > 0)
-    {
-        idsArrSpliced.push(idsArr.splice(0, 100));
-    }
-
-    var finished = 0;
-    for (var i = 0; i < idsArrSpliced.length; ++i) {
-        options['path'] = '/1.1/users/lookup.json?user_id=' + idsArrSpliced[i];
-        var req = https.request(options, function (res) {
-            console.log('STATUS: ' + res.statusCode);
-            console.log('HEADERS: ' + JSON.stringify(res.headers));
-            res.setEncoding('utf8');
-            var body = String();
-            res.on('data', function (chunk) {
-                body += chunk;
-            });
-            res.on('end', function () {
-                console.log('BODY: ' + body)
-                response.write(JSON.stringify(JSON.parse(body), null, '  '));
-                if (++finished == idsArrSpliced.length) {
-                    response.end();
-                }
-            });
-        });
-
-        req.on('error', function(e) {console.log('problem with request: ' + e.message);});
-        req.end();
-    }
+    apiReq.end();
 })
 
-var server = app.listen(app.get('port'), function() {
-  console.log("Node app is running at localhost:" + app.get('port'))
+
+app.get('/api/friends/ids', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        headers: globalOptions.headers,
+        path: '/1.1/friends/ids.json?screen_name=' + request.query.screen_name + '&stringify_ids=true&count=5000',
+    };
+
+    var apiReq = https.get(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            response.send(body);
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.end();
 });
+
+
+app.get('/api/followers/ids', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        headers: globalOptions.headers,
+        path: '/1.1/followers/ids.json?screen_name=' + request.query.screen_name + '&stringify_ids=true&count=5000',
+    };
+
+    var apiReq = https.get(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            response.send(body);
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.end();
+});
+
+
+app.get('/api/friends/list', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        headers: globalOptions.headers,
+        path: '/1.1/friends/list.json?screen_name=' + request.query.screen_name + '&count=200&skip_status=true&include_user_entities=false',
+    };
+
+    var apiReq = https.get(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            response.send(body);
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.end();
+});
+
+
+app.get('/api/followers/list', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        headers: globalOptions.headers,
+        path: '/1.1/followers/list.json?screen_name=' + request.query.screen_name + '&count=200&skip_status=true&include_user_entities=false',
+    };
+
+    var apiReq = https.get(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            response.send(body);
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.end();
+});
+
+
+app.get('/api/application/rate_limit_status', function (request, response) {
+    var options = {
+        hostname: globalOptions.hostname,
+        headers: globalOptions.headers,
+        path: '/1.1/application/rate_limit_status.json?resources=application,users,followers,friends'
+    };
+
+    var apiReq = https.get(options, function (apiRes) {
+        console.log('STATUS: ' + apiRes.statusCode);
+        console.log('HEADERS: ' + apiRes.headers);
+
+        var stream = '';
+        apiRes.on('data', function (chunk) {
+            stream += chunk;
+            console.log('CHUNK: ' + chunk);
+        });
+
+        apiRes.on('end', function () {
+            body = JSON.parse(stream);
+            console.log('BODY: ', body);
+            response.send(body);
+        });
+    });
+
+    apiReq.on('error', function (e) {
+        console.log('ERROR - Problem with request: ' + e.message);
+    });
+
+    apiReq.end();
+});
+
+
+var server = app.listen(app.get('port'), function() {
+    console.log('Node app is running at localhost:' + app.get('port'))
+});
+
+// authenticateBluebird();
