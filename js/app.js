@@ -1,4 +1,4 @@
-$('#usernameForm').submit( function() {
+// $('#usernameForm').submit( function() {
 //     var user = {'screen_name': $('#username').val()}
 //     // console.log(user);
 
@@ -62,4 +62,4 @@ $('#usernameForm').submit( function() {
 //         });
 //     });
 //     return false;
-});
+// });
