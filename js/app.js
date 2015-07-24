@@ -1,65 +1,60 @@
-// $('#usernameForm').submit( function() {
-//     var user = {'screen_name': $('#username').val()}
-//     // console.log(user);
+$('#usernameForm').submit(function(object) {
+    $('#friendsList').empty();
+    $('#followersList').empty();
 
-//     var frndsIDsReq = $.getJSON('http://nickcharles-bluebird.herokuapp.com/friends/ids', user);
-//     var fllwrsIDsReq = $.getJSON('http://nickcharles-bluebird.herokuapp.com/followers/ids', user);
+    var user = {
+        'screen_name': $('#screen_name').val()
+    }
 
-//     $.when(frndsIDsReq, fllwrsIDsReq).done(function (frndsIDsRes, fllwrsIDsRes) {
-//         // console.log('Friends');
-//         // console.log(frndsIDsRes[0].ids);
-//         // console.log('Followers');
-//         // console.log(fllwrsIDsRes[0].ids);
+    var friendsIDsReq = $.getJSON('http://bluebird-api.herokuapp.com/api/friends/ids', user);
+    var followersIDsReq = $.getJSON('http://bluebird-api.herokuapp.com/api/followers/ids', user);
 
-//         var uniqFrndsIDs = difference(frndsIDsRes[0].ids, fllwrsIDsRes[0].ids);
-//         var uniqFllwrsIDs = difference(fllwrsIDsRes[0].ids, frndsIDsRes[0].ids);
+    $.when(friendsIDsReq, followersIDsReq).done(function (friendsIDsRes, followersIDsRes) {
+        console.log('Friends');
+        console.log(friendsIDsRes[0].ids);
+        console.log('Followers');
+        console.log(followersIDsRes[0].ids);
 
-//         // console.log('Unique Friends IDs');
-//         // console.log(uniqFrndsIDs);
-//         // console.log(uniqFrndsIDs.length);
-//         var uniqFrndsIDsArr = Array();
-//         while (uniqFrndsIDs.length > 0)
-//         {
-//             uniqFrndsIDsArr.push(uniqFrndsIDs.splice(0, 100));
-//         }
-//         // console.log('Unique Friends Array');
-//         // console.log(uniqFrndsIDsArr);
+        var uniqFriendsIDs = _.difference(friendsIDsRes[0].ids, followersIDsRes[0].ids);
+        var uniqFollowersIDs = _.difference(followersIDsRes[0].ids, friendsIDsRes[0].ids);
 
-//         // console.log('Unique Followers IDs');
-//         // console.log(uniqFllwrsIDs);
-//         // console.log(uniqFllwrsIDs.length);
-//         var uniqFllwrsIDsArr = Array();
-//         while (uniqFllwrsIDs.length > 0)
-//         {
-//             uniqFllwrsIDsArr.push(uniqFllwrsIDs.splice(0, 100));
-//         }
-//         // console.log('Unique Followers Array');
-//         // console.log(uniqFllwrsIDsArr);
+        console.log('Unique Friends IDs');
+        console.log(uniqFriendsIDs);
+        console.log(uniqFriendsIDs.length);
+        var uniqFriendsIDsArr = Array();
+        while (uniqFriendsIDs.length > 0) {
+            uniqFriendsIDsArr.push(uniqFriendsIDs.splice(0, 100));
+        }
+        console.log('Unique Friends Array');
+        console.log(uniqFriendsIDsArr);
 
-//         $( '.friends' ).empty();
-//         $( '.followers' ).empty();
+        console.log('Unique Followers IDs');
+        console.log(uniqFollowersIDs);
+        console.log(uniqFollowersIDs.length);
+        var uniqFollowersIDsArr = Array();
+        while (uniqFollowersIDs.length > 0) {
+            uniqFollowersIDsArr.push(uniqFollowersIDs.splice(0, 100));
+        }
+        console.log('Unique Followers Array');
+        console.log(uniqFollowersIDsArr);
 
-//         var frndsObjsQuery, frndsObjsReq;
-//         frndsObjsReq = $.getJSON('http://nickcharles-bluebird.herokuapp.com/users/lookup', 'user_id=' + uniqFrndsIDsArr.join());
-//         $.when(frndsObjsReq).done(function (frndsObjsRes) {
-//             // console.log('Unique Friends');
-//             // console.log(frndsObjsRes);
-//             for (var j = 0; j < frndsObjsRes.length; ++j)
-//             {
-//                 $( '.friends' ).append('<li><b>' + frndsObjsRes[j].name + '</b> - @' + frndsObjsRes[j].screen_name + '</li>');
-//             }
-//         });
+        var friendsObjsReq = $.getJSON('http://bluebird-api.herokuapp.com/api/users/lookup', 'user_id=' + uniqFriendsIDsArr.join());
+        $.when(friendsObjsReq).done(function (friendsObjsRes) {
+            console.log('Unique Friends');
+            console.log(friendsObjsRes);
+            for (var i = 0; i < friendsObjsRes.length; ++i) {
+                $('#friendsList').append('<li><b>' + friendsObjsRes[i].name + '</b> - @' + friendsObjsRes[i].screen_name + '</li>');
+            }
+        });
 
-//         var fllwrsObjsQuery, fllwrsObjsReq;
-//         fllwrsObjsReq = $.getJSON('http://nickcharles-bluebird.herokuapp.com/users/lookup', 'user_id=' + uniqFllwrsIDsArr.join());
-//         $.when(fllwrsObjsReq).done(function (fllwrsObjsRes) {
-//             // console.log('Unique Followers');
-//             // console.log(fllwrsObjsRes);
-//             for (var j = 0; j < fllwrsObjsRes.length; ++j)
-//             {
-//                 $( '.followers' ).append('<li><b>' + fllwrsObjsRes[j].name + '</b> - @' + fllwrsObjsRes[j].screen_name + '</li>');
-//             }
-//         });
-//     });
-//     return false;
-// });
+        var followersObjsReq = $.getJSON('http://bluebird-api.herokuapp.com/api/users/lookup', 'user_id=' + uniqFollowersIDsArr.join());
+        $.when(followersObjsReq).done(function (followersObjsRes) {
+            console.log('Unique Followers');
+            console.log(followersObjsRes);
+            for (var i = 0; i < followersObjsRes.length; ++i) {
+                $('#followersList').append('<li><b>' + followersObjsRes[i].name + '</b> - @' + followersObjsRes[i].screen_name + '</li>');
+            }
+        });
+    });
+    return false;
+});
