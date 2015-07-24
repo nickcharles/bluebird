@@ -1,0 +1,9 @@
+.listContainer {
+    display: inline-block;
+    width: 50%;
+    vertical-align: top;
+}
+
+.listContainer ul {
+    list-style-type: none;
+}
