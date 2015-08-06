@@ -20,8 +20,9 @@
         <form id="usernameForm">
           <label>Twitter Handle</label>
           <p>
-            @<input type="text" id='screen_name' placeholder="username" required>
-            <button type="submit">Check</button>
+            @<input id="screenName" type="text" placeholder="username" required>
+            <button id="searchButton" type="submit" disabled>Check</button>
+            <legend><small id="statusText"></small></legend>
           </p>
         </form>
       </header>

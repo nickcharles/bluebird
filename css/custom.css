@@ -12,3 +12,7 @@ section {
     list-style-type: none;
     padding-left: 0;
 }
+
+#statusText {
+    font-weight: bold;
+}
